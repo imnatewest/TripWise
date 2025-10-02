@@ -1,0 +1,93 @@
+import { useState } from "react";
+import API from "./api";
+
+function NewTrip({ onTripCreated }) {
+  const [destination, setDestination] = useState("");
+  const [budget, setBudget] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!destination.trim()) return "Destination is required.";
+    if (budget <= 0) return "Budget must be greater than 0.";
+    if (!startDate || !endDate) return "Both dates are required.";
+    if (new Date(endDate) < new Date(startDate))
+      return "End date must be after start date.";
+    return null;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      const res = await API.post("/trips", {
+        destination,
+        budget: parseFloat(budget),
+        start_date: startDate,
+        end_date: endDate,
+      });
+      onTripCreated(res.data);
+      setDestination("");
+      setBudget("");
+      setStartDate("");
+      setEndDate("");
+      setError("");
+    } catch (err) {
+      console.error("Failed to create trip:", err);
+      setError("Error creating trip. Please try again.");
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-4 rounded shadow mb-6 space-y-2"
+    >
+      <h2 className="text-xl font-bold">Add a New Trip</h2>
+
+      {error && <p className="text-red-600 text-sm">{error}</p>}
+
+      <input
+        type="text"
+        placeholder="Destination"
+        className="w-full border p-2 rounded"
+        value={destination}
+        onChange={(e) => setDestination(e.target.value)}
+        required
+      />
+      <input
+        type="number"
+        placeholder="Budget"
+        className="w-full border p-2 rounded"
+        value={budget}
+        onChange={(e) => setBudget(e.target.value)}
+        required
+      />
+      <input
+        type="date"
+        className="w-full border p-2 rounded"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        required
+      />
+      <input
+        type="date"
+        className="w-full border p-2 rounded"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        required
+      />
+      <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+        Create Trip
+      </button>
+    </form>
+  );
+}
+
+export default NewTrip;
