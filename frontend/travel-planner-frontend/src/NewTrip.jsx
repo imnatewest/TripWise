@@ -1,5 +1,6 @@
 import { useState } from "react";
 import API from "./api";
+import { parseISO, format } from "date-fns";
 
 function NewTrip({ onTripCreated }) {
   const [destination, setDestination] = useState("");
@@ -19,16 +20,23 @@ function NewTrip({ onTripCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    setError(null);
+
+    if (new Date(endDate) < new Date(startDate)) {
+      setError("End date cannot be before start date.");
+      return;
+    }
+
+    // Validate budget
+    if (isNaN(budget) || Number(budget) < 0) {
+      setError("Budget must be a valid number and cannot be negative.");
       return;
     }
 
     try {
       const res = await API.post("/trips", {
         destination,
-        budget: parseFloat(budget),
+        budget,
         start_date: startDate,
         end_date: endDate,
       });
@@ -37,12 +45,12 @@ function NewTrip({ onTripCreated }) {
       setBudget("");
       setStartDate("");
       setEndDate("");
-      setError("");
     } catch (err) {
-      console.error("Failed to create trip:", err);
-      setError("Error creating trip. Please try again.");
+      console.error("Trip creation failed:", err);
+      setError("Failed to create trip.");
     }
   };
+
 
   return (
     <form
@@ -51,7 +59,7 @@ function NewTrip({ onTripCreated }) {
     >
       <h2 className="text-xl font-bold">Add a New Trip</h2>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 mb-3 text-center">{error}</p>}
 
       <input
         type="text"

@@ -11,18 +11,26 @@ function Signup({ onSignup }) {
     e.preventDefault();
     setError(null);
 
-    try {
-      const res = await API.post("/signup", { name, email, password });
-      localStorage.setItem("token", res.data.token);
-      onSignup(res.data.user);
-    } catch (err) {
-      if (err.response && err.response.data.errors) {
-        setError(err.response.data.errors.join(", "));
-      } else {
-        setError("Signup failed. Please try again.");
+    // Front end validation
+    
+    if (password.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        return;
       }
-    }
-  };
+
+      try {
+        const res = await API.post("/signup", { name, email, password });
+        localStorage.setItem("token", res.data.token);
+        onSignup(res.data.user);
+      } catch (err) {
+        if (err.response && err.response.data.errors) {
+          setError(err.response.data.errors.join(", "));
+        } else {
+          setError("Signup failed. Please try again.");
+        }
+      }
+    };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
