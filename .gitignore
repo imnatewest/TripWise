@@ -1,0 +1,14 @@
+# Backend
+/backend/log/*
+/backend/tmp/*
+/backend/db/*.sqlite3
+/backend/db/*.sqlite3-journal
+/backend/.env
+
+# Frontend
+/frontend/travel-planner-frontend/node_modules
+/frontend/travel-planner-frontend/dist
+
+# General
+*.log
+.DS_Store
