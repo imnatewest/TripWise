@@ -5,6 +5,7 @@ import Signup from "./Signup";
 import NewTrip from "./NewTrip";
 import Modal from "./Modal";
 import EditTripForm from "./EditTripForm";
+import ItineraryList from "./ItineraryList";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -86,41 +87,47 @@ function App() {
       {trips.length > 0 ? (
         <ul className="space-y-4">
           {trips.map((trip) => (
-            <li
-              key={trip.id}
-              className="p-4 bg-white rounded shadow flex justify-between items-center"
-            >
-              <div>
-                <h2 className="text-2xl font-semibold">{trip.destination}</h2>
-                <p>Budget: ${trip.budget}</p>
-                <p>
-                  {trip.start_date} → {trip.end_date}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setEditingTrip(trip)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={async () => {
-                    try {
-                      await API.delete(`/trips/${trip.id}`);
-                      setTrips((prev) => prev.filter((t) => t.id !== trip.id));
-                    } catch (err) {
-                      console.error("Delete failed:", err);
-                      alert("Error deleting trip");
-                    }
-                  }}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
+  <li
+    key={trip.id}
+    className="p-4 bg-white rounded shadow flex flex-col gap-3"
+  >
+    <div className="flex justify-between items-center">
+      <div>
+        <h2 className="text-2xl font-semibold">{trip.destination}</h2>
+        <p>Budget: ${trip.budget}</p>
+        <p>
+          {trip.start_date} → {trip.end_date}
+        </p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setEditingTrip(trip)}
+          className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+        >
+          Edit
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              await API.delete(`/trips/${trip.id}`);
+              setTrips((prev) => prev.filter((t) => t.id !== trip.id));
+            } catch (err) {
+              console.error("Delete failed:", err);
+              alert("Error deleting trip");
+            }
+          }}
+          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+
+    {/* NEW: Itineraries under each trip */}
+    <ItineraryList tripId={trip.id} />
+  </li>
+))}
+
         </ul>
       ) : (
         <p>No trips found.</p>
