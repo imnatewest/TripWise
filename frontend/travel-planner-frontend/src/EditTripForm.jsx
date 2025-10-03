@@ -1,5 +1,8 @@
 import { useState } from "react";
 import API from "./api";
+import DatePicker from "react-datepicker";
+import { parseISO, format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 
 function EditTripForm({ trip, onSave }) {
   const [destination, setDestination] = useState(trip.destination);
@@ -57,17 +60,19 @@ function EditTripForm({ trip, onSave }) {
         value={budget}
         onChange={(e) => setBudget(e.target.value)}
       />
-      <input
-        type="date"
-        className="border p-2 rounded w-full"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
+      <DatePicker
+        selected={startDate ? parseISO(startDate) : null}
+        onChange={(date) => setStartDate(date ? format(date, "yyyy-MM-dd") : "")}
+        dateFormat="MMM d, yyyy"
+        placeholderText="Start date"    
+        className="w-full p-2 border rounded placeholder-gray-400"
       />
-      <input
-        type="date"
-        className="border p-2 rounded w-full"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
+      <DatePicker
+        selected={endDate ? parseISO(endDate) : null}
+        onChange={(date) => setEndDate(date ? format(date, "yyyy-MM-dd") : "")}
+        dateFormat="MMM d, yyyy"
+        placeholderText="End date"      
+        className="w-full p-2 border rounded placeholder-gray-400"
       />
       <button className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 w-full">
         Save Changes

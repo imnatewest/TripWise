@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import API from "./api";
+import DatePicker from "react-datepicker";
+import { parseISO, format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 function ItineraryList({ tripId }) {
   const [itineraries, setItineraries] = useState([]);
   const [newItinerary, setNewItinerary] = useState({ title: "", date: "", notes: "" });
+  const [newDate, setNewDate] = useState("");
 
   useEffect(() => {
     API.get(`/trips/${tripId}/itineraries`)
@@ -63,11 +68,12 @@ function ItineraryList({ tripId }) {
           onChange={(e) => setNewItinerary({ ...newItinerary, title: e.target.value })}
           className="border p-2 rounded w-full"
         />
-        <input
-          type="date"
-          value={newItinerary.date}
-          onChange={(e) => setNewItinerary({ ...newItinerary, date: e.target.value })}
-          className="border p-2 rounded w-full"
+        <DatePicker
+          selected={newDate ? parseISO(newDate) : null}
+          onChange={(date) => setNewDate(format(date, "yyyy-MM-dd"))}
+          dateFormat="MMM d, yyyy"
+          placeholderText="Select a date"
+          className="w-full p-2 border rounded placeholder-gray-400"
         />
         <input
           type="text"

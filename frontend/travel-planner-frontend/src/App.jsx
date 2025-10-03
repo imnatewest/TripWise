@@ -7,6 +7,7 @@ import Modal from "./Modal";
 import EditTripForm from "./EditTripForm";
 import ItineraryList from "./ItineraryList";
 import { format, formatDistanceToNow, differenceInDays, parseISO } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   const [user, setUser] = useState(null);

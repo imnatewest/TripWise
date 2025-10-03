@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "./api";
 import { parseISO, format } from "date-fns";
+import DatePicker from "react-datepicker";
 
 function NewTrip({ onTripCreated }) {
   const [destination, setDestination] = useState("");
@@ -77,20 +78,22 @@ function NewTrip({ onTripCreated }) {
         onChange={(e) => setBudget(e.target.value)}
         required
       />
-      <input
-        type="date"
-        className="w-full border p-2 rounded"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        required
+      <DatePicker
+        selected={startDate ? parseISO(startDate) : null}
+        onChange={(date) => setStartDate(format(date, "yyyy-MM-dd"))}
+        dateFormat="MMM d, yyyy"
+        placeholderText="Start Date"
+        className="w-full p-2 mb-3 border rounded"
       />
-      <input
-        type="date"
-        className="w-full border p-2 rounded"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        required
+
+      <DatePicker
+        selected={endDate ? parseISO(endDate) : null}
+        onChange={(date) => setEndDate(format(date, "yyyy-MM-dd"))}
+        dateFormat="MMM d, yyyy"
+        placeholderText="End Date"
+        className="w-full p-2 mb-3 border rounded"
       />
+
       <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
         Create Trip
       </button>
