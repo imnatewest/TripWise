@@ -3,12 +3,16 @@ import API from "./api";
 import DatePicker from "react-datepicker";
 import { parseISO, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import { MapPin, FileText, Trash2, Calendar, PlusCircle } from "lucide-react";
 
 function ItineraryList({ tripId }) {
   const [itineraries, setItineraries] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [newItinerary, setNewItinerary] = useState({ title: "", date: "", notes: "" });
-
+  const [newItinerary, setNewItinerary] = useState({
+    title: "",
+    date: "",
+    notes: "",
+  });
+  const [newDate, setNewDate] = useState("");
 
   useEffect(() => {
     API.get(`/trips/${tripId}/itineraries`)
@@ -19,9 +23,13 @@ function ItineraryList({ tripId }) {
   const addItinerary = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post(`/trips/${tripId}/itineraries`, newItinerary);
+      const res = await API.post(`/trips/${tripId}/itineraries`, {
+        ...newItinerary,
+        date: newDate,
+      });
       setItineraries((prev) => [...prev, res.data]);
       setNewItinerary({ title: "", date: "", notes: "" });
+      setNewDate("");
     } catch (err) {
       alert("Failed to add itinerary");
     }
@@ -38,86 +46,98 @@ function ItineraryList({ tripId }) {
 
   return (
     <div className="mt-4">
-      <h3 className="font-bold">Itinerary</h3>
+      <h3 className="text-lg font-semibold mb-2">Itinerary</h3>
       {itineraries.length === 0 ? (
-        <p className="text-gray-500">No plans yet</p>
+        <p className="text-gray-500 italic">No plans yet</p>
       ) : (
-        <div className="space-y-2 mt-2">
+        <ul className="list-none space-y-3">
           {itineraries.map((it) => (
-            <div
+            <li
               key={it.id}
-              className="flex justify-between items-center bg-gray-50 p-2 rounded shadow-sm"
+              className="flex justify-between items-start bg-gray-50 p-3 rounded-lg shadow-sm"
             >
-              <div>
-                <p className="text-sm text-gray-600">
-                  {it.date ? format(parseISO(it.date), "MMM d, yyyy") : ""}
+              <div className="space-y-1">
+                <p className="flex items-center text-gray-800">
+                  <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+                  <span className="font-semibold">
+                    {it.date ? format(parseISO(it.date), "MMM d, yyyy") : ""}
+                  </span>
                 </p>
-                <p className="font-medium">{it.title}</p>
-                {it.notes && <p className="text-gray-500 text-sm">{it.notes}</p>}
+                <p className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-2 text-green-600" />
+                  {it.title || <span className="italic text-gray-400">No title</span>}
+                </p>
+                {it.notes && (
+                  <p className="flex items-center text-gray-600">
+                    <FileText className="w-4 h-4 mr-2 text-gray-500" />
+                    {it.notes}
+                  </p>
+                )}
               </div>
               <button
                 onClick={() => deleteItinerary(it.id)}
-                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                className="flex items-center bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
               >
-                Delete
+                <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {/* Add Itinerary Form */}
-      {showForm ? (
-          <form onSubmit={addItinerary} className="mt-3 space-y-2 bg-white p-3 rounded shadow">
-            <input
-              type="text"
-              placeholder="Title"
-              value={newItinerary.title}
-              onChange={(e) => setNewItinerary({ ...newItinerary, title: e.target.value })}
-              className="border p-2 rounded w-full"
-              required
-            />
-            <DatePicker
-              selected={newItinerary.date ? parseISO(newItinerary.date) : null}
-              onChange={(date) => {
-                if (date) {
-                  setNewItinerary((prev) => ({ ...prev, date: format(date, "yyyy-MM-dd") }));
-                }
-              }}
-              dateFormat="MMM d, yyyy"
-              placeholderText="Select a date"
-              className="w-full p-2 border rounded placeholder-gray-400"
-            />
+      <form
+        onSubmit={addItinerary}
+        className="mt-4 space-y-3 bg-white p-4 rounded-lg shadow"
+      >
+        {/* Title */}
+        <div className="flex items-center border rounded p-2">
+          <MapPin className="w-5 h-5 text-green-600 mr-2" />
+          <input
+            type="text"
+            placeholder="Title"
+            value={newItinerary.title}
+            onChange={(e) =>
+              setNewItinerary({ ...newItinerary, title: e.target.value })
+            }
+            className="flex-1 outline-none"
+          />
+        </div>
 
-            <input
-              type="text"
-              placeholder="Notes"
-              value={newItinerary.notes}
-              onChange={(e) => setNewItinerary({ ...newItinerary, notes: e.target.value })}
-              className="border p-2 rounded w-full"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
-              >
-                Cancel
-              </button>
-              <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-                Add
-              </button>
-            </div>
-          </form>
-        ) : (
-          <button
-            onClick={() => setShowForm(true)}
-            className="mt-3 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-          >
-            + Add Itinerary
-          </button>
-        )}
+        {/* Date */}
+        <div className="flex items-center border rounded p-2">
+          <Calendar className="w-5 h-5 text-blue-600 mr-2" />
+          <DatePicker
+            selected={newDate ? parseISO(newDate) : null}
+            onChange={(date) => setNewDate(format(date, "yyyy-MM-dd"))}
+            dateFormat="MMM d, yyyy"
+            placeholderText="Select a date"
+            className="flex-1 outline-none"
+          />
+        </div>
 
+        {/* Notes */}
+        <div className="flex items-center border rounded p-2">
+          <FileText className="w-5 h-5 text-gray-600 mr-2" />
+          <input
+            type="text"
+            placeholder="Notes"
+            value={newItinerary.notes}
+            onChange={(e) =>
+              setNewItinerary({ ...newItinerary, notes: e.target.value })
+            }
+            className="flex-1 outline-none"
+          />
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full"
+        >
+          <PlusCircle className="w-5 h-5 mr-2" /> Add Itinerary
+        </button>
+      </form>
     </div>
   );
 }

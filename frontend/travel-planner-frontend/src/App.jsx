@@ -7,6 +7,7 @@ import Modal from "./Modal";
 import EditTripForm from "./EditTripForm";
 import ItineraryList from "./ItineraryList";
 import { format, parseISO } from "date-fns";
+import { Pencil, Trash2, Calendar, DollarSign } from "lucide-react";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -64,52 +65,63 @@ function App() {
       <NewTrip onTripCreated={handleTripCreated} />
 
       {trips.length > 0 ? (
-        <ul className="space-y-4">
+        <ul className="space-y-6">
           {trips.map((trip) => (
             <li
               key={trip.id}
-              className="p-4 bg-white rounded shadow"
+              className="p-5 bg-white rounded-lg shadow flex flex-col space-y-4"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-semibold">{trip.destination}</h2>
-                  <p>Budget: ${trip.budget}</p>
-                  <p>
-                    {trip.start_date ? format(parseISO(trip.start_date), "MMM d, yyyy") : ""} →{" "}
-                    {trip.end_date ? format(parseISO(trip.end_date), "MMM d, yyyy") : ""}
+                  <h2 className="text-2xl font-bold text-blue-600">
+                    {trip.destination}
+                  </h2>
+                  <p className="flex items-center text-gray-700">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {trip.start_date
+                      ? format(parseISO(trip.start_date), "MMM d, yyyy")
+                      : ""}{" "}
+                    →{" "}
+                    {trip.end_date
+                      ? format(parseISO(trip.end_date), "MMM d, yyyy")
+                      : ""}
+                  </p>
+                  <p className="flex items-center text-gray-500">
+                    <DollarSign className="w-4 h-4 mr-1" /> ${trip.budget}
                   </p>
                 </div>
+
                 <div className="flex gap-2">
                   <button
                     onClick={() => setEditingTrip(trip)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                    className="flex items-center bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                   >
-                    Edit
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
                   </button>
                   <button
                     onClick={async () => {
                       try {
                         await API.delete(`/trips/${trip.id}`);
-                        setTrips((prev) => prev.filter((t) => t.id !== trip.id));
+                        setTrips((prev) =>
+                          prev.filter((t) => t.id !== trip.id)
+                        );
                       } catch (err) {
                         console.error("Delete failed:", err);
                         alert("Error deleting trip");
                       }
                     }}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    className="flex items-center bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                   >
-                    Delete
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete
                   </button>
                 </div>
               </div>
 
-              {/* Itineraries for this trip */}
-              <div className="mt-4 border-t pt-3">
-                <h3 className="text-lg font-semibold mb-2">Itinerary</h3>
+              {/* Itineraries neatly nested */}
+              <div className="pl-4 border-l-2 border-gray-300">
                 <ItineraryList tripId={trip.id} />
               </div>
             </li>
-
           ))}
         </ul>
       ) : (

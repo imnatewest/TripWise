@@ -3,6 +3,7 @@ import API from "./api";
 import DatePicker from "react-datepicker";
 import { parseISO, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import { MapPin, DollarSign, Calendar, Save } from "lucide-react";
 
 function EditTripForm({ trip, onSave }) {
   const [destination, setDestination] = useState(trip.destination);
@@ -43,38 +44,66 @@ function EditTripForm({ trip, onSave }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-4 p-4">
       <h2 className="text-xl font-bold mb-2">Edit Trip</h2>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
-      <input
-        type="text"
-        className="border p-2 rounded w-full"
-        value={destination}
-        onChange={(e) => setDestination(e.target.value)}
-      />
-      <input
-        type="number"
-        className="border p-2 rounded w-full"
-        value={budget}
-        onChange={(e) => setBudget(e.target.value)}
-      />
-      <DatePicker
-        selected={startDate ? parseISO(startDate) : null}
-        onChange={(date) => setStartDate(date ? format(date, "yyyy-MM-dd") : "")}
-        dateFormat="MMM d, yyyy"
-        placeholderText="Start date"    
-        className="w-full p-2 border rounded placeholder-gray-400"
-      />
-      <DatePicker
-        selected={endDate ? parseISO(endDate) : null}
-        onChange={(date) => setEndDate(date ? format(date, "yyyy-MM-dd") : "")}
-        dateFormat="MMM d, yyyy"
-        placeholderText="End date"      
-        className="w-full p-2 border rounded placeholder-gray-400"
-      />
-      <button className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 w-full">
+      {/* Destination */}
+      <div className="flex items-center border rounded p-2">
+        <MapPin className="w-5 h-5 text-blue-600 mr-2" />
+        <input
+          type="text"
+          className="flex-1 outline-none"
+          placeholder="Destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+        />
+      </div>
+
+      {/* Budget */}
+      <div className="flex items-center border rounded p-2">
+        <DollarSign className="w-5 h-5 text-green-600 mr-2" />
+        <input
+          type="number"
+          className="flex-1 outline-none"
+          placeholder="Budget"
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
+        />
+      </div>
+
+      {/* Start Date */}
+      <div className="flex items-center border rounded p-2">
+        <Calendar className="w-5 h-5 text-gray-600 mr-2" />
+        <DatePicker
+          selected={startDate ? parseISO(startDate) : null}
+          onChange={(date) =>
+            setStartDate(date ? format(date, "yyyy-MM-dd") : "")
+          }
+          dateFormat="MMM d, yyyy"
+          placeholderText="Start date"
+          className="flex-1 outline-none"
+        />
+      </div>
+
+      {/* End Date */}
+      <div className="flex items-center border rounded p-2">
+        <Calendar className="w-5 h-5 text-gray-600 mr-2" />
+        <DatePicker
+          selected={endDate ? parseISO(endDate) : null}
+          onChange={(date) => setEndDate(date ? format(date, "yyyy-MM-dd") : "")}
+          dateFormat="MMM d, yyyy"
+          placeholderText="End date"
+          className="flex-1 outline-none"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 flex items-center justify-center"
+      >
+        <Save className="w-5 h-5 mr-2" />
         Save Changes
       </button>
     </form>
