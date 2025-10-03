@@ -6,8 +6,7 @@ import NewTrip from "./NewTrip";
 import Modal from "./Modal";
 import EditTripForm from "./EditTripForm";
 import ItineraryList from "./ItineraryList";
-import { format, formatDistanceToNow, differenceInDays, parseISO } from "date-fns";
-import "react-datepicker/dist/react-datepicker.css";
+import { format, parseISO } from "date-fns";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -42,31 +41,9 @@ function App() {
 
   if (!user) {
     return showSignup ? (
-      <div>
-        <Signup onSignup={setUser} />
-        <p className="text-center mt-4">
-          Already have an account?{" "}
-          <button
-            className="text-blue-600 underline"
-            onClick={() => setShowSignup(false)}
-          >
-            Log in
-          </button>
-        </p>
-      </div>
+      <Signup onSignup={setUser} onSwitchToLogin={() => setShowSignup(false)} />
     ) : (
-      <div>
-        <Login onLogin={setUser} />
-        <p className="text-center mt-4">
-          Don’t have an account?{" "}
-          <button
-            className="text-green-600 underline"
-            onClick={() => setShowSignup(true)}
-          >
-            Sign up
-          </button>
-        </p>
-      </div>
+      <Login onLogin={setUser} onSwitchToSignup={() => setShowSignup(true)} />
     );
   }
 
@@ -91,22 +68,16 @@ function App() {
           {trips.map((trip) => (
             <li
               key={trip.id}
-              className="p-4 bg-white rounded shadow flex flex-col gap-3"
+              className="p-4 bg-white rounded shadow"
             >
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-semibold">{trip.destination}</h2>
                   <p>Budget: ${trip.budget}</p>
                   <p>
-                    {format(parseISO(trip.start_date), "MMM d, yyyy")} → {format(parseISO(trip.end_date), "MMM d, yyyy")}
-                    <span className="text-gray-500 text-sm ml-2">
-                      ({differenceInDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1} days,
-                      starts {formatDistanceToNow(parseISO(trip.start_date), { addSuffix: true })})
-                    </span>
+                    {trip.start_date ? format(parseISO(trip.start_date), "MMM d, yyyy") : ""} →{" "}
+                    {trip.end_date ? format(parseISO(trip.end_date), "MMM d, yyyy") : ""}
                   </p>
-
-
-
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -132,11 +103,14 @@ function App() {
                 </div>
               </div>
 
-              {/* NEW: Itineraries under each trip */}
-              <ItineraryList tripId={trip.id} />
+              {/* Itineraries for this trip */}
+              <div className="mt-4 border-t pt-3">
+                <h3 className="text-lg font-semibold mb-2">Itinerary</h3>
+                <ItineraryList tripId={trip.id} />
+              </div>
             </li>
-      ))}
 
+          ))}
         </ul>
       ) : (
         <p>No trips found.</p>

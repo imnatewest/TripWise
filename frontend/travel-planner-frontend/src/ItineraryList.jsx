@@ -4,11 +4,11 @@ import DatePicker from "react-datepicker";
 import { parseISO, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
-
 function ItineraryList({ tripId }) {
   const [itineraries, setItineraries] = useState([]);
+  const [showForm, setShowForm] = useState(false);
   const [newItinerary, setNewItinerary] = useState({ title: "", date: "", notes: "" });
-  const [newDate, setNewDate] = useState("");
+
 
   useEffect(() => {
     API.get(`/trips/${tripId}/itineraries`)
@@ -42,50 +42,82 @@ function ItineraryList({ tripId }) {
       {itineraries.length === 0 ? (
         <p className="text-gray-500">No plans yet</p>
       ) : (
-        <ul className="list-disc list-inside space-y-1">
+        <div className="space-y-2 mt-2">
           {itineraries.map((it) => (
-            <li key={it.id} className="flex justify-between items-center">
-              <span>
-                <span className="font-semibold">{it.date}:</span> {it.title} — {it.notes}
-              </span>
+            <div
+              key={it.id}
+              className="flex justify-between items-center bg-gray-50 p-2 rounded shadow-sm"
+            >
+              <div>
+                <p className="text-sm text-gray-600">
+                  {it.date ? format(parseISO(it.date), "MMM d, yyyy") : ""}
+                </p>
+                <p className="font-medium">{it.title}</p>
+                {it.notes && <p className="text-gray-500 text-sm">{it.notes}</p>}
+              </div>
               <button
                 onClick={() => deleteItinerary(it.id)}
-                className="bg-red-600 text-white px-2 py-1 rounded ml-4"
+                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
               >
                 Delete
               </button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {/* Add Itinerary Form */}
-      <form onSubmit={addItinerary} className="mt-3 space-y-2">
-        <input
-          type="text"
-          placeholder="Title"
-          value={newItinerary.title}
-          onChange={(e) => setNewItinerary({ ...newItinerary, title: e.target.value })}
-          className="border p-2 rounded w-full"
-        />
-        <DatePicker
-          selected={newDate ? parseISO(newDate) : null}
-          onChange={(date) => setNewDate(format(date, "yyyy-MM-dd"))}
-          dateFormat="MMM d, yyyy"
-          placeholderText="Select a date"
-          className="w-full p-2 border rounded placeholder-gray-400"
-        />
-        <input
-          type="text"
-          placeholder="Notes"
-          value={newItinerary.notes}
-          onChange={(e) => setNewItinerary({ ...newItinerary, notes: e.target.value })}
-          className="border p-2 rounded w-full"
-        />
-        <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">
-          Add Itinerary
-        </button>
-      </form>
+      {showForm ? (
+          <form onSubmit={addItinerary} className="mt-3 space-y-2 bg-white p-3 rounded shadow">
+            <input
+              type="text"
+              placeholder="Title"
+              value={newItinerary.title}
+              onChange={(e) => setNewItinerary({ ...newItinerary, title: e.target.value })}
+              className="border p-2 rounded w-full"
+              required
+            />
+            <DatePicker
+              selected={newItinerary.date ? parseISO(newItinerary.date) : null}
+              onChange={(date) => {
+                if (date) {
+                  setNewItinerary((prev) => ({ ...prev, date: format(date, "yyyy-MM-dd") }));
+                }
+              }}
+              dateFormat="MMM d, yyyy"
+              placeholderText="Select a date"
+              className="w-full p-2 border rounded placeholder-gray-400"
+            />
+
+            <input
+              type="text"
+              placeholder="Notes"
+              value={newItinerary.notes}
+              onChange={(e) => setNewItinerary({ ...newItinerary, notes: e.target.value })}
+              className="border p-2 rounded w-full"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+              <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                Add
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button
+            onClick={() => setShowForm(true)}
+            className="mt-3 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+          >
+            + Add Itinerary
+          </button>
+        )}
+
     </div>
   );
 }

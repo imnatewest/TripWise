@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API from "./api";
 
-function Signup({ onSignup }) {
+function Signup({ onSignup, onSwitchToLogin }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,69 +11,78 @@ function Signup({ onSignup }) {
     e.preventDefault();
     setError(null);
 
-    // Front end validation
-    
     if (password.length < 6) {
-        setError("Password must be at least 6 characters long.");
-        return;
-      }
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
 
-      try {
-        const res = await API.post("/signup", { name, email, password });
-        localStorage.setItem("token", res.data.token);
-        onSignup(res.data.user);
-      } catch (err) {
-        if (err.response && err.response.data.errors) {
-          setError(err.response.data.errors.join(", "));
-        } else {
-          setError("Signup failed. Please try again.");
-        }
+    try {
+      const res = await API.post("/signup", { name, email, password });
+      localStorage.setItem("token", res.data.token);
+      onSignup(res.data.user);
+    } catch (err) {
+      if (err.response && err.response.data.errors) {
+        setError(err.response.data.errors.join(", "));
+      } else {
+        setError("Signup failed. Please try again.");
       }
-    };
-
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md p-6 bg-white shadow-lg rounded"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
+    <div className="h-[100dvh] flex flex-col items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center mb-6 text-green-600">Sign Up</h2>
 
-        {error && <p className="text-red-600 mb-3 text-center">{error}</p>}
+        {error && (
+          <p className="text-red-600 mb-4 text-center font-medium">{error}</p>
+        )}
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password (min 6 characters)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
 
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Create Account
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition font-medium"
+          >
+            Create Account
+          </button>
+        </form>
+
+        <p className="text-center mt-4">
+          Already have an account?{" "}
+          <button
+            className="text-blue-600 underline"
+            type="button"
+            onClick={onSwitchToLogin}
+          >
+            Log in
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
