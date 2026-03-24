@@ -47,15 +47,6 @@ A full-stack AI-powered travel planning platform that simplifies the process of 
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Ruby (latest stable version)
-- Node.js & npm
-- PostgreSQL
-- API keys for OpenAI, Google Maps, and Flightradar24
-
 ### Running Locally
 
 This project is not currently deployed. To run locally you'll need API keys for OpenAI, Google Maps, and Flightradar24, along with Ruby, Node.js, and PostgreSQL. Feel free to reach out if you'd like setup details.
