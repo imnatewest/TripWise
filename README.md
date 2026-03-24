@@ -43,7 +43,7 @@ A full-stack AI-powered travel planning platform that simplifies the process of 
 
 ## Figma Prototype
 
-[View Figma Prototype]([your-figma-link-here](https://www.figma.com/proto/M73Uu9DEdBM6QZQYua7CIV/Main-App?node-id=0-1&t=WugvZS6DP0kTdgwt-1))
+[View Figma Prototype]([https://www.figma.com/proto/M73Uu9DEdBM6QZQYua7CIV/Main-App?node-id=0-1&t=WugvZS6DP0kTdgwt-1])
 
 ---
 
